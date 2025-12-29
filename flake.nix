@@ -61,14 +61,6 @@
             runHook postInstall
           '';
         };
-
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            (ags.packages.${system}.default.override {
-              inherit extraPackages;
-            })
-          ];
-        };
       }
     );
 }

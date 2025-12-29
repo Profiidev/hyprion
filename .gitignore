@@ -2,3 +2,7 @@ node_modules/
 @girs/
 /.direnv/
 /result
+
+# Devenv
+.devenv*
+devenv.local.nix
