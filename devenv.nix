@@ -9,6 +9,7 @@ let
     astal4
     notifd
     wireplumber
+    hyprland
   ];
 
   extraPackages =

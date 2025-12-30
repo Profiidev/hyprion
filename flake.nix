@@ -30,6 +30,7 @@
           astal4
           notifd
           wireplumber
+          hyprland
         ];
 
         extraPackages = astalPackages ++ [

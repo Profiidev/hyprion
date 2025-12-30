@@ -1,6 +1,7 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
 $fg-color: #{"@theme_fg_color"};
 $bg-color: #{"@theme_bg_color"};
+$base-color: #{"@theme_base_color"};
 
 window.Bar {
   background: transparent;
@@ -11,10 +12,16 @@ window.Bar {
     background: $bg-color;
     border-radius: 10px;
     margin: 8px;
-  }
 
-  button {
-    border-radius: 8px;
-    margin: 2px;
+    .workspaces {
+      background: $base-color;
+      border-radius: 10px;
+      margin: 5px;
+
+      .workspace {
+        background: transparent;
+        padding: 5px;
+      }
+    }
   }
 }
