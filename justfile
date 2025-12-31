@@ -13,7 +13,7 @@ run:
     echo "Starting the bar...";
     ags run . &
     echo "Bar started, waiting for file changes...";
-    inotifywait -q -r -e modify,move,create,delete .;
+    inotifywait -q -r -e modify,move,create,delete --exclude '\.git|node_modules|@girs' .;
     echo "File change detected. Killing bar";
     pkill ags;
     pkill gjs;

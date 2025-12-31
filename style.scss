@@ -12,16 +12,27 @@ window.Bar {
     background: $bg-color;
     border-radius: 10px;
     margin: 8px;
+  }
+}
 
-    .workspaces {
-      background: $base-color;
-      border-radius: 10px;
-      margin: 5px;
+.workspaces {
+  background: $base-color;
+  border-radius: 10px;
+  margin: 5px;
 
-      .workspace {
-        background: transparent;
-        padding: 5px;
-      }
+  .workspace {
+    margin: 5px;
+    border-radius: 10px;
+    background: white;
+
+    .text {
+      font-size: 14px;
+      color: black;
+      margin: 0 6px;
     }
+  }
+
+  .active {
+    background: red;
   }
 }
