@@ -1,6 +1,6 @@
-import { Gdk, Gtk } from "ags/gtk4"
+import { Gdk } from "ags/gtk4"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { createBinding, For, With } from "ags"
+import { createBinding, createComputed, For, With } from "ags"
 
 type Props = {
   gdkmonitor: Gdk.Monitor
@@ -27,50 +27,61 @@ export default function Workspaces({ gdkmonitor }: Props) {
   const active = createBinding(currentMonitor, "activeWorkspace")
   const special = createBinding(currentMonitor, "specialWorkspace")
 
+  const wsWidth = createComputed(() => normalWorkspaces().length * 36)
+  const activeCss = createComputed(
+    () =>
+      `--move: ${
+        normalWorkspaces().findIndex((ws) => ws.id === active()?.id) * 36
+      }px;`
+  )
+
   return (
-    <box $type="start">
+    <box $type="start" class="workspaces">
       <With value={special}>
         {(special) => {
           return (
             <box>
-              <With value={active}>
-                {(active) => {
-                  return (
-                    <box
-                      $type="start"
-                      class="workspaces"
-                      orientation={Gtk.Orientation.HORIZONTAL}
-                    >
-                      <For each={normalWorkspaces}>
-                        {(ws) => {
-                          const isActive = ws.id === active.id
-                          const label = special
-                            ? special.name.replace("special:", "")
-                            : ws.name
-
-                          return (
-                            <centerbox
-                              heightRequest={24}
-                              widthRequest={isActive ? 48 : 36}
-                              class={"workspace " + (isActive && "active")}
-                            >
-                              <label
-                                $type="center"
-                                label={label}
-                                class="text"
-                              />
-                            </centerbox>
-                          )
-                        }}
-                      </For>
-                    </box>
-                  )
-                }}
-              </With>
+              {special && (
+                <Workspace
+                  ws={special}
+                  label={special.name.replace("special:", "")}
+                />
+              )}
+              <overlay>
+                <box $type="overlay">
+                  <For each={normalWorkspaces}>
+                    {(ws) => {
+                      return <Workspace ws={ws} label={ws.name} />
+                    }}
+                  </For>
+                </box>
+                <box widthRequest={wsWidth} heightRequest={36}>
+                  <box class="active" css={activeCss} widthRequest={36} />
+                </box>
+              </overlay>
             </box>
           )
         }}
       </With>
     </box>
+  )
+}
+
+type WorkspaceProps = {
+  ws: AstalHyprland.Workspace
+  label: string
+}
+
+function Workspace({ ws, label }: WorkspaceProps) {
+  return (
+    <button
+      class="workspace"
+      heightRequest={24}
+      widthRequest={24}
+      label={label}
+      onClicked={() => {
+        ws.focus()
+      }}
+    />
   )
 }
