@@ -1,6 +1,6 @@
-import { Gdk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { createBinding, createComputed, For, With } from "ags"
+import { createBinding, createComputed, For } from "ags"
 
 type Props = {
   gdkmonitor: Gdk.Monitor
@@ -27,42 +27,71 @@ export default function Workspaces({ gdkmonitor }: Props) {
   const active = createBinding(currentMonitor, "activeWorkspace")
   const special = createBinding(currentMonitor, "specialWorkspace")
 
-  const wsWidth = createComputed(() => normalWorkspaces().length * 36)
+  const wsWidth = createComputed(() => {
+    const normalSize = normalWorkspaces().length * 24 + 12
+    const specialSize = (special()?.name ?? "").length * 4 + 4
+    return normalSize > specialSize ? normalSize : specialSize
+  })
   const activeCss = createComputed(
     () =>
-      `--move: ${
-        normalWorkspaces().findIndex((ws) => ws.id === active()?.id) * 36
-      }px;`
+      `
+    --move: ${
+      special()
+        ? 0
+        : normalWorkspaces().findIndex((ws) => ws.id === active()?.id) * 24
+    }px;
+    --width: ${special() ? wsWidth() : 36}px;
+      `
   )
+
+  const specialClasses = createComputed(
+    () => `special ${special() && "special-active"}`
+  )
+  const specialLabel = createComputed(
+    () => special()?.name.replace("special:", "") || ""
+  )
+  const specialTarget = createComputed(() => !!special())
 
   return (
     <box $type="start" class="workspaces">
-      <With value={special}>
-        {(special) => {
-          return (
-            <box>
-              {special && (
-                <Workspace
-                  ws={special}
-                  label={special.name.replace("special:", "")}
-                />
-              )}
-              <overlay>
-                <box $type="overlay">
-                  <For each={normalWorkspaces}>
-                    {(ws) => {
-                      return <Workspace ws={ws} label={ws.name} />
+      <overlay>
+        <button
+          $type="overlay"
+          label={specialLabel}
+          class={specialClasses}
+          canFocus={false}
+          halign={Gtk.Align.CENTER}
+          widthRequest={wsWidth}
+          canTarget={specialTarget}
+        />
+        <overlay>
+          <box $type="overlay">
+            <For each={normalWorkspaces}>
+              {(ws) => {
+                const widthCss = createComputed(() => {
+                  const width = active()?.id === ws.id ? 36 : 24
+                  return `--width: ${width}px;`
+                })
+
+                return (
+                  <button
+                    class="workspace"
+                    label={ws.name}
+                    css={widthCss}
+                    canFocus={false}
+                    onClicked={() => {
+                      ws.focus()
                     }}
-                  </For>
-                </box>
-                <box widthRequest={wsWidth} heightRequest={36}>
-                  <box class="active" css={activeCss} widthRequest={36} />
-                </box>
-              </overlay>
-            </box>
-          )
-        }}
-      </With>
+                  />
+                )
+              }}
+            </For>
+          </box>
+          <box widthRequest={wsWidth} heightRequest={20}>
+            <box class="active" css={activeCss} />
+          </box>
+        </overlay>
+      </overlay>
     </box>
   )
 }
@@ -76,8 +105,6 @@ function Workspace({ ws, label }: WorkspaceProps) {
   return (
     <button
       class="workspace"
-      heightRequest={24}
-      widthRequest={24}
       label={label}
       onClicked={() => {
         ws.focus()
