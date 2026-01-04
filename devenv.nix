@@ -10,6 +10,7 @@ let
     notifd
     wireplumber
     hyprland
+    apps
   ];
 
   extraPackages =

@@ -31,6 +31,7 @@
           notifd
           wireplumber
           hyprland
+    apps
         ];
 
         extraPackages = astalPackages ++ [

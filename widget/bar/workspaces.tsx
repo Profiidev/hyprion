@@ -1,14 +1,13 @@
 import { Gdk, Gtk } from "ags/gtk4"
-import AstalHyprland from "gi://AstalHyprland?version=0.1"
+import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createComputed, For } from "ags"
 
 type Props = {
   gdkmonitor: Gdk.Monitor
+  hyprland: AstalHyprland.Hyprland
 }
 
-export default function Workspaces({ gdkmonitor }: Props) {
-  const hyprland = AstalHyprland.get_default()
-
+export default function Workspaces({ gdkmonitor, hyprland }: Props) {
   const currentMonitor = hyprland.monitors.find(
     (mon) => mon.name === gdkmonitor.connector
   )
@@ -53,46 +52,44 @@ export default function Workspaces({ gdkmonitor }: Props) {
   const specialTarget = createComputed(() => !!special())
 
   return (
-    <box $type="start" class="workspaces">
+    <overlay class="workspaces">
+      <button
+        $type="overlay"
+        label={specialLabel}
+        class={specialClasses}
+        canFocus={false}
+        halign={Gtk.Align.CENTER}
+        widthRequest={wsWidth}
+        canTarget={specialTarget}
+      />
       <overlay>
-        <button
-          $type="overlay"
-          label={specialLabel}
-          class={specialClasses}
-          canFocus={false}
-          halign={Gtk.Align.CENTER}
-          widthRequest={wsWidth}
-          canTarget={specialTarget}
-        />
-        <overlay>
-          <box $type="overlay">
-            <For each={normalWorkspaces}>
-              {(ws) => {
-                const widthCss = createComputed(() => {
-                  const width = active()?.id === ws.id ? 36 : 24
-                  return `--width: ${width}px;`
-                })
+        <box $type="overlay">
+          <For each={normalWorkspaces}>
+            {(ws) => {
+              const widthCss = createComputed(() => {
+                const width = active()?.id === ws.id ? 36 : 24
+                return `--width: ${width}px;`
+              })
 
-                return (
-                  <button
-                    class="workspace"
-                    label={ws.name}
-                    css={widthCss}
-                    canFocus={false}
-                    onClicked={() => {
-                      ws.focus()
-                    }}
-                  />
-                )
-              }}
-            </For>
-          </box>
-          <box widthRequest={wsWidth} heightRequest={20}>
-            <box class="active" css={activeCss} />
-          </box>
-        </overlay>
+              return (
+                <button
+                  class="workspace"
+                  label={ws.name}
+                  css={widthCss}
+                  canFocus={false}
+                  onClicked={() => {
+                    ws.focus()
+                  }}
+                />
+              )
+            }}
+          </For>
+        </box>
+        <box widthRequest={wsWidth} heightRequest={20}>
+          <box class="active" css={activeCss} />
+        </box>
       </overlay>
-    </box>
+    </overlay>
   )
 }
 

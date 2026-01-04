@@ -1,0 +1,22 @@
+$insensitive-bg-color: #{"@insensitive_bg_color"};
+//$text-color: #{"@theme_text_color"};
+$text-color: white;
+$accent-color: #{"@accent_bg_color"};
+
+.focus {
+  background: $insensitive-bg-color;
+  border-radius: 10px;
+  padding: 4px;
+  margin-left: 4px;
+
+  label {
+    font-size: 12px;
+    color: $text-color;
+    font-weight: normal;
+  }
+
+  .spacer {
+    color: $accent-color;
+    margin: 0 4px;
+  }
+}
