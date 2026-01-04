@@ -1,6 +1,7 @@
 import AstalHyprland from "gi://AstalHyprland"
 import Apps from "gi://AstalApps"
 import { createBinding, createComputed, createState } from "ags"
+import Pango from "gi://Pango"
 
 type Props = {
   hyprland: AstalHyprland.Hyprland
@@ -64,7 +65,12 @@ export default function Focus({ hyprland }: Props) {
     <box class="focus">
       <label label={clientName} />
       <label label="•" class="spacer" />
-      <label class="detail" label={clientDetail} />
+      <label
+        class="detail"
+        label={clientDetail}
+        ellipsize={Pango.EllipsizeMode.END}
+        maxWidthChars={32}
+      />
     </box>
   )
 }
