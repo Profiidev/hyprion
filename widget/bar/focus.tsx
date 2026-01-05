@@ -1,6 +1,6 @@
 import AstalHyprland from "gi://AstalHyprland"
 import Apps from "gi://AstalApps"
-import { createBinding, createComputed, createState } from "ags"
+import { createBinding, createComputed, createState, With } from "ags"
 import Pango from "gi://Pango"
 
 type Props = {
@@ -15,13 +15,23 @@ const apps = new Apps.Apps({
 
 export default function Focus({ hyprland }: Props) {
   const client = createBinding(hyprland, "focusedClient")
-  let [clientTitle, setClientTitle] = createState(hyprland.focusedClient?.title)
-  let [clientClass, setClientClass] = createState(hyprland.focusedClient?.class)
+  let [clientTitle, setClientTitle] = createState<string | undefined>(
+    hyprland.focusedClient?.title
+  )
+  let [clientClass, setClientClass] = createState<string | undefined>(
+    hyprland.focusedClient?.class
+  )
   let clientTitleUnsub = () => {}
   let clientClassUnsub = () => {}
 
   const updateClientBindings = () => {
     let c = client()
+    if (!c) {
+      setClientTitle(undefined)
+      setClientClass(undefined)
+      return
+    }
+
     let bindingTitle = createBinding(c, "title")
     let bindingClass = createBinding(c, "class")
 
@@ -44,10 +54,10 @@ export default function Focus({ hyprland }: Props) {
 
   const clientName = createComputed(() => {
     const className = clientClass()
-    if (!className) return "?"
+    if (!className) return ""
 
     const appInfos = apps.fuzzy_query(className)[0]
-    return appInfos ? appInfos.name : "?"
+    return appInfos ? appInfos.name : ""
   })
   const clientDetail = createComputed(() => {
     let title = clientTitle() || ""
@@ -62,15 +72,23 @@ export default function Focus({ hyprland }: Props) {
   })
 
   return (
-    <box class="focus">
-      <label label={clientName} />
-      <label label="•" class="spacer" />
-      <label
-        class="detail"
-        label={clientDetail}
-        ellipsize={Pango.EllipsizeMode.END}
-        maxWidthChars={32}
-      />
-    </box>
+    <With value={clientName}>
+      {(name) => {
+        return name ? (
+          <box class="focus">
+            <label label={clientName} />
+            <label label="•" class="spacer" />
+            <label
+              class="detail"
+              label={clientDetail}
+              ellipsize={Pango.EllipsizeMode.END}
+              maxWidthChars={32}
+            />
+          </box>
+        ) : (
+          <box></box>
+        )
+      }}
+    </With>
   )
 }
