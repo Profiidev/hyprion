@@ -11,6 +11,8 @@ let
     wireplumber
     hyprland
     apps
+    mpris
+    cava
   ];
 
   extraPackages =

@@ -3,6 +3,7 @@ import app from "ags/gtk4/app"
 import Workspaces from "./workspaces"
 import AstalHyprland from "gi://AstalHyprland"
 import Focus from "./focus"
+import Media from "./media"
 
 const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
@@ -23,6 +24,9 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box $type="start">
           <Workspaces gdkmonitor={gdkmonitor} hyprland={hyprland} />
           <Focus hyprland={hyprland} />
+        </box>
+        <box $type="center">
+          <Media />
         </box>
       </centerbox>
     </window>

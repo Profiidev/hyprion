@@ -31,7 +31,9 @@
           notifd
           wireplumber
           hyprland
-    apps
+          apps
+          mpris
+          cava
         ];
 
         extraPackages = astalPackages ++ [
