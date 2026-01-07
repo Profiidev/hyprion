@@ -15,6 +15,7 @@ const apps = new Apps.Apps({
 
 export default function Focus({ hyprland }: Props) {
   const client = createBinding(hyprland, "focusedClient")
+  const workspace = createBinding(hyprland, "focusedWorkspace")
   let [clientTitle, setClientTitle] = createState<string | undefined>(
     hyprland.focusedClient?.title
   )
@@ -55,6 +56,17 @@ export default function Focus({ hyprland }: Props) {
   const clientName = createComputed(() => {
     const className = clientClass()
     if (!className) return ""
+
+    const workspaceId = workspace()?.id
+    const clientWorkspace = client()?.workspace?.id
+    // focusedClient is not null when focusing an empty workspace
+    // special workspaces don't affect the focused workspace so we can't apply this logic there
+    if (
+      workspaceId !== clientWorkspace &&
+      clientWorkspace > 0 &&
+      clientWorkspace
+    )
+      return ""
 
     const appInfos = apps.fuzzy_query(className)[0]
     return appInfos ? appInfos.name : ""
