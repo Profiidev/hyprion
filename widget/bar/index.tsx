@@ -27,6 +27,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         </box>
         <box $type="center">
           <Media />
+          <box widthRequest={400} />
         </box>
       </centerbox>
     </window>
